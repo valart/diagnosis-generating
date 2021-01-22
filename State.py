@@ -1,35 +1,35 @@
 import random
+from StateName import StateName
 
-class State(object):
-    #https://tostr.pl/blog/implementation-of-finite-state-automata-in-python/
-    def __init__(self, probability, final, *diagnoses):
-        self.probability = probability
-        self.final = final
+
+class State:
+
+    def __init__(self, name, diagnoses):
+        self.name = name
         self.diagnoses = diagnoses
-        self.transitions = {}
+        self.transitions = dict()
 
     def addTransition(self, probability, state):
-        self.transitions[probability] = state
+        self.transitions[state] = probability
 
-    def start(self):
-        self.diagnoses = sorted(self.diagnoses, key=lambda x: x.power)
-        power = random.uniform(0,1)
+    def generate(self):
+        power = random.uniform(0, 1)
         previous = 0
-
-        for index, diagnosis in enumerate(self.diagnoses):
-            if power <= diagnosis.power + previous:
-                print(diagnosis.name, ("" if self.final else "->"), end=" ")
-                break
-            else:
-                previous += diagnosis.power
-
-        if not self.final:
-            probabilities = sorted(list(self.transitions.keys()))
-            prob = random.uniform(0,1)
-            previous = 0
-            for probability in probabilities:
-                if prob < probability + previous:
-                    self.transitions[probability].start()
+        if self.name != StateName.initial or self.name != StateName.final:
+            self.diagnoses = sorted(self.diagnoses, key=lambda x: x.probability)
+            for diagnosis in self.diagnoses:
+                if power <= diagnosis.probability + previous:
+                    print(diagnosis.name, end=" ")
                     break
                 else:
-                    previous += probability
+                    previous += diagnosis.probability
+            power = random.uniform(0, 1)
+            previous = 0
+
+        self.transitions = dict(sorted(self.transitions.items(), key=lambda x: x[1]))
+        for state, probability in self.transitions.items():
+            if power <= probability + previous:
+                state.generate()
+                break
+            else:
+                previous += probability

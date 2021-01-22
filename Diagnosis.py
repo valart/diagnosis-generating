@@ -1,5 +1,5 @@
-class Diagnosis(object):
+class Diagnosis:
 
-    def __init__(self, name, power):
+    def __init__(self, name, probability):
         self.name = name
-        self.power = power
+        self.probability = probability
