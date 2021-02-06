@@ -1,0 +1,25 @@
+name: Diagnosis 2
+
+states:
+ - D
+ - E
+
+start_states:
+ D: 1
+
+final_states:
+ D: 0.3
+
+transition_probability:
+ D:
+  E: 0.7
+ E:
+  D: 1
+
+diagnoses:
+ D:
+  d1: 0.2
+  d2: 0.8
+ E:
+  e1: 0.35
+  e2: 0.65

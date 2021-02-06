@@ -1,0 +1,17 @@
+diagnoses:
+  - Diagnosis 1
+  - Diagnosis 2
+
+start_diagnoses:
+  Diagnosis 1: 0.45
+  Diagnosis 2: 0.55
+
+final_diagnoses:
+  Diagnosis 1: 0.3
+  Diagnosis 2: 0.4
+
+transition_probability:
+  Diagnosis 1:
+    Diagnosis 2: 0.7
+  Diagnosis 2:
+    Diagnosis 1: 0.6
