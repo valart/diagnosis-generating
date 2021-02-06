@@ -1,13 +1,17 @@
 import yaml
+import os
 from State import State
 from Diagnosis import Diagnosis
 from StateName import StateName
+from Model import Model
 
 
-def getModel(filename):
+def getDiagnosis(filename):
     with open(filename) as file:
         data = yaml.load(file, Loader=yaml.FullLoader)
         states = dict()
+        name = data['name']
+
         for state in data['states']:
             diagnoses = []
             for key, value in data['diagnoses'][state].items():
@@ -29,4 +33,29 @@ def getModel(filename):
             final.addTransition(value, states[key])
         states[StateName.final] = final
 
-        return states
+        return name, states
+
+
+def getModel():
+    diagnoses = dict()
+    for diagnosisFile in os.listdir('diagnoses/'):
+        name, state = getDiagnosis('diagnoses/' + diagnosisFile)
+        diagnoses[name] = Model(name, state)
+
+    with open('model.yml') as file:
+        data = yaml.load(file, Loader=yaml.FullLoader)
+        final = Model(StateName.final, None)
+
+        for diagnosisNames in data['diagnoses']:
+            if diagnosisNames in data['transition_probability']:
+                for key, value in data['transition_probability'][diagnosisNames].items():
+                    diagnoses[diagnosisNames].addTransition(value, diagnoses[key])
+            if diagnosisNames in data['final_diagnoses']:
+                for key, value in data['final_diagnoses'].items():
+                    diagnoses[key].addTransition(value, final)
+
+        initial = Model(StateName.initial, None)
+        for key, value in data["start_diagnoses"].items():
+            initial.addTransition(value, diagnoses[key])
+
+        return initial
